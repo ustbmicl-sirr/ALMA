@@ -82,6 +82,33 @@ hier_agent:
   pi_pointer_net: True
   pi_autoreg: True
 
+# --- EA (Evolutionary Algorithm) parameters ---
+ea:
+  enabled: False  # Whether to use EA for task allocation optimization
+  # Population settings
+  pop_size: 5               # Population size
+  elite_size: 2             # Number of elites to preserve
+  # Genetic operators
+  selection: "tournament"   # Selection method: tournament, rank
+  tournament_size: 3        # Tournament size for selection
+  selection_pressure: 1.5   # Selection pressure for rank selection
+  crossover: "layerwise"    # Crossover method: layerwise, uniform, blend, soft
+  crossover_rate: 0.8       # Probability of crossover
+  blend_alpha: 0.5          # Alpha for blend crossover
+  soft_tau: 0.5             # Tau for soft crossover
+  mutation: "gaussian"      # Mutation method: gaussian, safe
+  mutation_rate: 0.3        # Probability of mutation
+  mutation_strength: 0.1    # Mutation noise strength
+  adaptive_mutation: False  # Adaptive mutation scaling
+  safe_threshold: 0.5       # Threshold for safe mutation
+  # Evaluation settings
+  eval_episodes: 3          # Episodes to evaluate each genome
+  interval: 5000            # EA update interval (timesteps)
+  # Bidirectional synchronization (EA <-> Gradient learning)
+  bidirectional_sync: True  # Enable EA<->gradient sync
+  sync_interval: 1000       # Sync check interval
+  sync_threshold: 0.05      # Performance threshold for sync
+
 mask_subtask_actions: False  # Whether to mask actions by whether they're available in the specific allocated subtasks
 rnn_hidden_dim: 64 # Size of hidden state for default rnn agent
 attn_embed_dim: 128

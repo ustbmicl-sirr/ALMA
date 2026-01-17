@@ -1,0 +1,70 @@
+# --- EA-QMIX: QMIX with Evolutionary Task Allocation ---
+# Combines gradient-based Q-learning with evolutionary optimization for task allocation
+
+# use epsilon greedy action selector
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 500000
+
+runner: "parallel"
+batch_size_run: 8
+training_iters: 8
+
+entity_last_action: True # Include the user-controlled agents' last actions (one_hot) in their entities
+
+buffer_size: 5000
+
+# update the target network every {} episodes
+target_update_interval: 200
+
+# use the EA Q_Learner to train
+agent_output_type: "q"
+learner: "ea_q_learner"  # EA-enhanced Q-Learner
+double_q: True
+mixer: "flex_qmix"
+mixing_embed_dim: 32
+hypernet_embed: 128
+softmax_mixing_weights: True
+rnn_hidden_dim: 64
+mac: "entity_mac"
+attn_embed_dim: 128
+attn_n_heads: 4
+lmbda: 0.5
+agent:
+  recurrent: False
+  entity_scheme: True
+  imagine: False
+  subtask_cond: "mask"  # Condition agents on their subtask
+
+# --- Hierarchical Agent Configuration ---
+hier_agent:
+  task_allocation: "aql"    # Use learned allocation (required for EA)
+  alloc_policy: "autoreg"   # Autoregressive allocation policy
+  alloc_critic: "standard"  # Standard allocation critic
+  action_length: 5          # Steps between high-level decisions
+
+# --- EA Configuration ---
+ea:
+  enabled: True
+  # Population settings
+  pop_size: 5              # Population size
+  elite_size: 2            # Number of elites to preserve
+  # Genetic operators
+  selection: "tournament"  # Selection method: tournament, rank
+  tournament_size: 3       # Tournament size for selection
+  crossover: "layerwise"   # Crossover method: layerwise, uniform, blend, soft
+  crossover_rate: 0.8      # Probability of crossover
+  mutation: "gaussian"     # Mutation method: gaussian, safe
+  mutation_rate: 0.3       # Probability of mutation
+  mutation_strength: 0.1   # Mutation noise strength
+  adaptive_mutation: False # Adaptive mutation scaling
+  # Evaluation settings
+  eval_episodes: 3         # Episodes to evaluate each genome
+  interval: 5000           # EA update interval (timesteps)
+  # Bidirectional synchronization
+  bidirectional_sync: True # Enable EA<->gradient sync
+  sync_interval: 1000      # Sync check interval
+  sync_threshold: 0.05     # Performance threshold for sync
+
+name: "ea_qmix"

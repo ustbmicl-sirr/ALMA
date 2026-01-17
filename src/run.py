@@ -282,6 +282,10 @@ def run_sequential(args, logger):
     if args.use_cuda:
         learner.cuda()
 
+    # Setup EA Manager if using EA-enhanced learner
+    if hasattr(learner, 'setup_ea'):
+        learner.setup_ea(runner)
+
     if args.checkpoint_run_name != "" or args.checkpoint_unique_id != "":
         assert not (args.checkpoint_run_name != ""
                     and args.checkpoint_unique_id != ""), (
